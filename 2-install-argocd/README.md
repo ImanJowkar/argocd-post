@@ -5,14 +5,15 @@
 Installing ArgoCD is very straightforward, you can use both helm charts or apply yaml file. 
 
 We use yaml file to install ArgoCD in our kubernetes cluster.
-I you [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) to setup our kubernetes cluster and later install argocd on it.
+
+I suggest utilizing [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) to establish your Kubernetes cluster and then installing ArgoCD onto it.
 
 ## install kubernetes cluster with kind
 
 I highly recommend read kind documentation for you test environment, you can setup multi-node kubernetes cluster in a few seconds and do your tests on this cluster.
 
 
-I setup 3-node kubernetes cluster
+I will setup 3-node kubernetes cluster.
 here the configuration of kind 
 
 crate a file call it `workernodes.yaml` and insert below content into this file
@@ -51,8 +52,10 @@ kind create cluster --config workernodes.yaml
 
 ```
 
-after a few seconds, we have a kubernetes cluster with 3 nodes
+after a few seconds, we have a kubernetes cluster with 3 nodes.
 
+
+`Please note that you need to install the 'kubectl' binary.`
 
 ```
 
@@ -130,7 +133,7 @@ kind-worker2         Ready    <none>          176m   v1.27.1   172.20.0.4
 
 ```
 
-To access the ArgoCD UI, you have two options.
+To access the ArgoCD UI, we have two options.
 
 * Change the service to a NodePort type.
 * Utilize an Ingress controller.
@@ -143,7 +146,7 @@ kubectl -n argocd patch svc argocd-server -p '{"spec": {"type": "NodePort"}}'
 
 ```
 
-now run the following command 
+now run the following command for finding the nodeport port for accessing the argocd ui: 
 
 ```
 
@@ -154,9 +157,13 @@ argocd-server                             NodePort    10.96.103.42    <none>    
 
 ```
 
+attention to the following: 
+`80:30162/TCP,443:32700/TCP   47m`
+
+
 now open your favorite browser and go the the following address: 172.20.0.2:30162
 
-`172.20.0.2` this is IP address obtain from the following command 
+`172.20.0.2` This IP address is actually the IP of your Kubernetes node, obtained from the following command.
 ```
 
 kubectl get nodes -o wide
@@ -176,7 +183,9 @@ you have to see the argocd ui
 
 
 
-as the documentation, the default password for argocd is: admin
+as the documentation, the default password for argocd is: `admin`.
+
+
 and for obtain the password run below command:
 
 ```
@@ -210,6 +219,7 @@ After login to the argocd ui, please change your password in the `User Info` sec
 
 
 ### add repository to the argocd
+
 Before creating a project in ArgoCD, you need to add a repository that contains the YAML files for your applications.
 
 go the the settings
@@ -225,11 +235,11 @@ next click to `CONNECT REPO`
 do the following thing
 ![imgae5](img/5.png)
 
-after these steps you have to see
+after these steps you have to see something like this: 
 ![imgae6](img/6.png)
 
 
-The repository consists of two YAML files: one for the deployment and the other for the service, both serving as samples.
+This [repository](https://github.com/ImanJowkar/k8s-argocd-test.git) consists of two YAML files: one for the deployment and the other for the service, both serving as samples.
 
 here are the two YAML files
 
@@ -305,7 +315,7 @@ you can alse change the visualizations.
 
 
 
-note that, argocd create a `test` namespace in your kubernetes cluster and deploy this project to this namespace: 
+note that, argocd create a `test` namespace in your kubernetes cluster and deploy this project into this namespace: 
 
 ```
 kubectl get ns
@@ -343,7 +353,7 @@ replicaset.apps/nginx-deployment-cbdccf466   2         2         2       31m
 
 
 
-## ArgoCD cli
+## ArgoCD CLI
 
 The ArgoCD CLI (Command-Line Interface) is a command-line tool that allows users to interact with ArgoCD and perform various operations from the command line. It provides a convenient way to manage applications, repositories, and other resources within ArgoCD.
 
@@ -364,7 +374,7 @@ The ArgoCD CLI is a useful tool for automating tasks, integrating with other too
 
 ### Setup
 
-go to the [docs](https://argo-cd.readthedocs.io/en/stable/cli_installation/) for installing ArgoCD-cli
+go to the [docs](https://argo-cd.readthedocs.io/en/stable/cli_installation/) for installing ArgoCD-CLI
 ```
 curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
 sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
@@ -416,3 +426,19 @@ argocd account get-user-info
 argocd account update-password
 
 ```
+
+## conclusions
+
+In conclusion, this post provided a comprehensive guide to working with ArgoCD, covering each step in detail. We started by introducing ArgoCD and highlighting its importance as a Kubernetes deployment tool.
+
+We then delved into the installation process, beginning with setting up a Kubernetes cluster using Kind. This allowed readers to create a local cluster for testing and development purposes.
+
+Next, we focused on installing ArgoCD on the Kubernetes cluster. We provided clear instructions and walked readers through the necessary commands to deploy ArgoCD components, such as the API server, the controller, and the user interface.
+
+Once ArgoCD was successfully installed, we explored the process of adding a Git repository to ArgoCD. This enabled users to connect their application source code to ArgoCD and trigger automatic deployments upon changes in the repository.
+
+Furthermore, we discussed how to create applications within ArgoCD, specifying the desired source repository, target cluster, and synchronization policy. This allowed readers to effectively manage and deploy their applications using ArgoCD's intuitive interface.
+
+To enhance the experience and enable seamless command-line interaction, we covered the installation of the ArgoCD CLI. We explained how to install the CLI tool and provided examples of its usage for deploying and managing applications.
+
+Finally, we concluded that by following the step-by-step instructions in this post, readers can harness the power of ArgoCD to simplify and automate their Kubernetes deployments. ArgoCD's user-friendly interface, coupled with the ability to integrate with Git repositories, streamlines the application deployment process, enabling efficient continuous delivery and enhancing overall development productivity.
